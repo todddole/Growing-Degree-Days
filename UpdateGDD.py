@@ -108,13 +108,19 @@ def process_day(sheet, device, date):
     while sheet.getRow(row_num)[0] != '':
         row_num += 1
 
+    rows = sheet.getRows()
+    print("Before:")
+    print(len(rows))
     # iterate through and update google sheet
     for row in df.itertuples(index=False):
-        print(f'Processing row {row_num}')
+        #print(f'Processing row {row_num}')
         values = list(row)
-        sheet.updateRow(row_num, values)
-        row_num += 1
+        rows.append(values)
 
+    print("After:")
+    print(len(rows))
+
+    sheet.updateRows(rows)
     return mean_temp
 
 
@@ -171,7 +177,7 @@ def main():
         if gdd>0:
             cgdd+=gdd
 
-        s[0].updateRow(row, [cur_date.strftime('%Y-%m-%d'), str(mean_temp), str(gdd), str(cgdd)])
+        s[0].updateRow(row, [cur_date.strftime('%Y-%m-%d'), str(round(mean_temp, 2)), str(round(gdd, 2)), str(round(cgdd, 2))])
 
 
 
