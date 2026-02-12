@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import pandas as pd
 from pandas.core.tools.datetimes import DatetimeScalar
+import math
 
 
 def get_data(device, year, month, day):
@@ -115,7 +116,13 @@ def process_day(sheet, device, date):
     for row in df.itertuples(index=False):
         #print(f'Processing row {row_num}')
         values = list(row)
-        rows.append(values)
+        # Need to clean nan values
+        cleaned = [
+            "nan" if isinstance(x, float) and math.isnan(x) else x
+            for x in values
+        ]
+
+        rows.append(cleaned)
 
     print("After:")
     print(len(rows))
@@ -165,7 +172,7 @@ def main():
 
     gdd_start = float(os.getenv('GDD_START'))
 
-    if cur_date < datetime.now():
+    while cur_date < (datetime.now() - timedelta(days=1)):
         mean_temp = process_day(s['Data'], device, cur_date)
 
         gdd = max(mean_temp-gdd_start, 0)
@@ -178,6 +185,8 @@ def main():
             cgdd+=gdd
 
         s[0].updateRow(row, [cur_date.strftime('%Y-%m-%d'), str(round(mean_temp, 2)), str(round(gdd, 2)), str(round(cgdd, 2))])
+        time.sleep(1)
+        cur_date = cur_date + timedelta(days=1)
 
 
 
