@@ -185,6 +185,7 @@ def main():
             cgdd+=gdd
 
         s[0].updateRow(row, [cur_date.strftime('%Y-%m-%d'), str(round(mean_temp, 2)), str(round(gdd, 2)), str(round(cgdd, 2))])
+        row+=1
         time.sleep(1)
         cur_date = cur_date + timedelta(days=1)
 
